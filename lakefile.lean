@@ -5,7 +5,8 @@ package "Semver" where
   -- add package configuration options here
   leanOptions := #[
     ⟨`autoImplicit, false⟩,
-    ⟨`relaxedAutoImplicit, false⟩
+    ⟨`relaxedAutoImplicit, false⟩,
+    ⟨`linter.missingDocs, true⟩
   ]
 
 lean_lib «Semver» where
