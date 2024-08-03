@@ -27,10 +27,10 @@ def toString (v : Semver) : String :=
   let prereleaseStr := match v.prerelease with
     | none => ""
     | some n => s!"-rc{n}"
-  s!"v{v.major}.{v.minor}.{v.patch}{prereleaseStr}"
+  s!"leanprover/lean4:{v.major}.{v.minor}.{v.patch}{prereleaseStr}"
 
-#guard toString ⟨4, 8, 0, none⟩ = "v4.8.0"
-#guard toString ⟨4, 10, 0, some 2⟩ = "v4.10.0-rc2"
+#guard toString ⟨4, 8, 0, none⟩ = "leanprover/lean4:4.8.0"
+#guard toString ⟨4, 10, 0, some 2⟩ = "leanprover/lean4:4.10.0-rc2"
 
 instance : ToString Semver := ⟨toString⟩
 
@@ -92,7 +92,7 @@ def decidableLeq (x y : Semver) : Bool := Id.run do
 instance : LE Semver where
   le x y := decidableLeq x y
 
-instance : @DecidableRel Semver (· ≤ ·) := fun x y => (x.decidableLeq y).decEq true
+instance : @DecidableRel Semver (· ≤ ·) := fun x y => (decidableLeq x y).decEq true
 
 -- stable release ≥ prerelease
 #guard (⟨3, 2, 1, none⟩ : Semver) ≥ ⟨3, 2, 1, some 1⟩
@@ -105,19 +105,5 @@ instance : @DecidableRel Semver (· ≤ ·) := fun x y => (x.decidableLeq y).dec
 
 -- reflectivity
 #guard (⟨4, 10, 0, none⟩ : Semver) ≤ ⟨4, 10, 0, none⟩
-
-/-- get the latest release in given a list of `Semver`s -/
-def getLatest (versions : List Semver) : Option Semver :=
-  match versions with
-  | [] => none
-  | v :: _ =>
-    some <| versions.foldl (fun x y => if x ≥ y then x else y) v
-
-#guard getLatest [
-  ⟨4, 10, 0, none⟩,
-  ⟨4, 9, 1, none⟩,
-  ⟨4, 10, 0, some 2⟩,
-  ⟨4, 10, 0, some 1⟩
-] = some ⟨4, 10, 0, none⟩
 
 end Semver
